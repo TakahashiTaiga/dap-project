@@ -1,0 +1,33 @@
+server:
+    port:3000
+    servlet:
+        seesion:
+            timeout: 720m
+spring:
+    security:
+        ouath2:
+            clinet:
+                registration:
+                    google:
+                        client-id: ${GOOGLE_CLIENT_ID}
+                        client-secret: ${GOOGLE_CLIENT_SECRET}
+                        redirect-url: ${GOOGLE_REDIRECT_URI}
+    datasource:
+        mysql:
+            url: jdbc:mysql://${MYSQL_ADDRESS}/dap_db?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
+            username: ${MYSQL_ROOT_USER}
+            password: ${MYSQL_ROOT_PASSWORD}
+            driver-class-name: com.mysql.cj.jdbc.Driver
+        devtools:
+            livereload:
+                enabled: true
+            restart:
+                enabled: true
+logging:
+    level:
+        root: INFO
+        org.springframework.web: INFO
+        org.springframework.security: INFO
+        org.springframework.security.oauth2: INFO
+enviroment:
+    redirect-url: ${REDIRECT_URL}

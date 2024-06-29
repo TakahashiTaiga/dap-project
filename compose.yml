@@ -1,0 +1,63 @@
+version: '3'
+services:
+  vue:
+    container_name: vue
+    build: 
+      context: ./vue
+      dockerfile: Dockerfile
+    platform: linux/x86_64
+    volumes:
+      - ./vue/src/vite-project:/app:cached
+    environment:
+      - CHOKIDA_USEPOLLING=true
+      - VITE_API_URL=$VITE_API_URL
+    ports:
+      - "8000:5173"
+    tty: true
+    init: true
+
+  spring_boot:
+    container_name: spring_boot
+    build: 
+      context: ./spring_boot
+      dockerfile: Dockerfile
+    platform: linux/x86_64
+    volumes:
+      - ./spring_boot:/spring
+      - ./spring_boot/.m2:/home/spring/.m2
+    environment:
+      - REDIRECT_URL=${REDIRECT_URL}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI}
+      #db
+      - MYSQL_ADDRESS=${MYSQL_ADDRESS}
+      - MYSQL_ROOT_USER=${MYSQL_ROOT_USER}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    ports:
+      - 3000:3000
+      - 8080:8080
+    depends_on:
+      - mysql
+    init: true
+    restart: always
+
+  mysql:
+    container_name: mysql
+    image: mysql:8
+    platform: linux/x86_64
+    ports:
+      - 3306:3306
+    volumes:
+      - ./mysql/dap_db/initdb:/docker-entrypoint-initdb.d
+      - ./mysql/dap_db/config:/etc/mysql/conf.d
+      - ./mysql/dap_db/backup:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: "dap_db"
+      MYSQL_ROOT_USER: "${MYSQL_ROOT_USER}"
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      TZ: "Asia/Tokyo"
+      LC_ALL: C.UTF-8
+    init: true
+    
+    
